@@ -28,11 +28,20 @@ class Weibo:
         """
         给电报发送文字消息
         """
+        # 获取微博名
+        weibo_name = ''
+        try:
+            url = f'https://m.weibo.cn/api/container/getIndex?containerid=100505{self.WEIBO_ID}'
+            weibo_name = self.SESSION.get(url).json()['data']['userInfo']['screen_name']
+            print(f'【正确】当前设置的微博账户为：@{weibo_name}')
+        except:
+            print('【错误】请重新测试或检查微博数字ID是否正确')
+        
         headers = {
             'Content-Type': 'application/json',
         }
         data = f'{{"chat_id":"{self.TELEGRAM_CHAT_ID}", "text":"{text}", "reply_markup": {{"inline_keyboard":' \
-               f' [[{{"text":"🔗点击查看原微博", "url":"{weibo_link}"}}]]}}}} '
+               f' [[{{"text":"🔗点击查看@{weibo_name} 原微博", "url":"{weibo_link}"}}]]}}}} '
         url = f'https://api.telegram.org/bot{self.TELEGRAM_BOT_TOKEN}/sendMessage'
         try:
             self.SESSION.post(url, headers=headers, data=data.encode('utf-8'), proxies=self.PROXIES)
