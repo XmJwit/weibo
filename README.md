@@ -84,9 +84,9 @@ pip install -r requirements.txt
 
     `* * * * * python3绝对路径 -u 项目文件绝对路径 >> 日志存放绝对路径 2>&1`
     
-    如：
-
-    `* * * * * /usr/bin/python3 -u /home/weibo/weibo.py >> /home/weibo/weibo.log 2>&1`
+    每5分钟执行一次，如：
+    
+    `*/5 * * * * /bin/bash /home/weibo/killWeibo.sh >> /home/weibo/weibo.log; /usr/bin/python3 -u /home/weibo/weibo.py >> /home/weibo/weibo.log 2>&1`
 
 2. Windows系统配置：
 Windows系统直接打开同目录下的`win_run.bat`就可以定时执行了，每隔1分钟执行一次，如果想要加入到后台，请查阅`windows 计划任务`相关的资料，自行设置。
