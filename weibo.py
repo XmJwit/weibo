@@ -31,20 +31,11 @@ class Weibo:
         """
         给电报发送文字消息
         """
-        # 获取微博名
-        weibo_name = ''
-        try:
-            url = f'https://m.weibo.cn/api/container/getIndex?containerid=100505{self.WEIBO_ID}'
-            weibo_name = self.SESSION.get(url).json()['data']['userInfo']['screen_name']
-            print(f'【正确】当前设置的微博账户为：@{weibo_name}')
-        except:
-            print('【错误】请重新测试或检查微博数字ID是否正确')
-        time.sleep(5)
         headers = {
             'Content-Type': 'application/json',
         }
         data = f'{{"chat_id":"{self.TELEGRAM_CHAT_ID}", "text":"{text}", "reply_markup": {{"inline_keyboard":' \
-               f' [[{{"text":"  🔗点击查看@{weibo_name} 原微博  ", "url":"{weibo_link}"}}]]}}}} '
+               f' [[{{"text":"🔗点击查看原微博", "url":"{weibo_link}"}}]]}}}} '
         url = f'https://api.telegram.org/bot{self.TELEGRAM_BOT_TOKEN}/sendMessage'
         try:
             self.SESSION.post(url, headers=headers, data=data.encode('utf-8'), proxies=self.PROXIES)
@@ -60,7 +51,6 @@ class Weibo:
         data = dict(chat_id=f"{self.TELEGRAM_CHAT_ID}&", photo=img_url)
 
         self.SESSION.post(url, data=data, proxies=self.PROXIES)
-        time.sleep(10)
 
     def send_telegram_photos(self, pics):
         url = f'https://api.telegram.org/bot{self.TELEGRAM_BOT_TOKEN}/sendMediaGroup'
@@ -72,7 +62,6 @@ class Weibo:
             params['media'].append({'type': 'photo', 'media': pic})
         params['media'] = json.dumps(params['media'])
         result = self.SESSION.post(url, data=params, proxies=self.PROXIES)
-        time.sleep(30)
         if result.status_code != 200: # 如果分组发送失败 则单独发送图片
             for pic in pics:
                 self.send_telegram_photo(pic)
@@ -110,7 +99,6 @@ class Weibo:
                 else:
                     self.send_telegram_photos(pics)
 
-            time.sleep(30)
             # 配图发送到Telegram毕后，将配图独立保存到本地一份
             for pic in weibo['pics']:
                 filename = pic.split('/')[-1].split('?')[0]
@@ -160,7 +148,6 @@ class Weibo:
             weibo['pics'] = [pic['large']['url'] for pic in detail['data']['pics']]
         weibo['link'] = self.get_pc_url(weibo_id, bid)
         self.parse_weibo(weibo)
-        time.sleep(10)
 
     def get_pc_url(self, weibo_id, bid):
         return 'https://weibo.com/{weibo_id}/{uri}'.format(
